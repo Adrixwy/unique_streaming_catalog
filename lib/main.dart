@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-
 import 'ui/screens/login_screen.dart';
+import 'routes/app_routes.dart';
+import 'themes/app_theme.dart';
+
+
 
 void main() {
   runApp(const MyApp());
@@ -14,9 +17,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Unique Streaming Catalog',
-      theme: ThemeData.dark(), // Tema oscuro por defecto
       home: LoginScreen(), // Punto de entrada: pantalla de inicio de sesión
       debugShowCheckedModeBanner: false, // Elimina la etiqueta de debug
+      initialRoute: AppRoutes.login,
+      routes: AppRoutes.getRoutes(),
+      theme: AppThemes.darkTheme,
     );
   }
 }

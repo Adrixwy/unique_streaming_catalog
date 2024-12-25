@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unique_streaming_catalog/routes/app_routes.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -100,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
             // Botón Iniciar Sesión
             ElevatedButton(
               onPressed: () {
-                // Lógica de inicio de sesión
+                Navigator.pushReplacementNamed(context, AppRoutes.home);
               },
               child: Text(showRegisterFields ? 'Registrarme' : 'Iniciar Sesión'),
             ),
