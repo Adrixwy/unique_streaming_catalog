@@ -19,25 +19,25 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            /// 🏠 **Icono de Casa**
+            /// Icono de Casa
             IconButton(
               icon: Icon(Icons.home, color: Colors.white),
               onPressed: () {
-                // Lógica para volver al inicio (o refrescar la pantalla)
+                // volver al inicio (o refrescar la pantalla)
               },
             ),
 
-            /// 👤 **Nombre de Usuario (Desplegable)**
+            /// Nombre de Usuario (cerrar sesion)
             GestureDetector(
               onTap: () {
                 setState(() {
-                  showLogout = !showLogout; // Mostrar/ocultar botón cerrar sesión
+                  showLogout = !showLogout; // Mostrar/ocultar boton cerrar sesion
                 });
               },
               child: Row(
                 children: [
                   Text(
-                    'NombreUsuario', // Reemplázalo por el nombre real
+                    'NombreUsuario', //aparecera nombre usuario registrado
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   Icon(
@@ -51,13 +51,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
-      /// 🔻 **Botón Cerrar Sesión (Desplegable)**
+      /// Boton Cerrar Sesion (Desplegable)
       body: Stack(
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// 🔍 **Buscador**
+              /// Buscador
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: TextField(
@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              /// 📚 **Filtros Interactivos**
+              /// Filtros Interactivos
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
@@ -91,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 20),
 
-              /// 👇 **Contenido del catálogo (Placeholder por ahora)**
+              /// Contenido del catalogo (Placeholder por ahora)
               Expanded(
                 child: Center(
                   child: Text(
@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
 
-          /// 🛑 **Botón Cerrar Sesión**
+          /// Boton Cerrar Sesión
           if (showLogout)
             Positioned(
               top: kToolbarHeight + 10, // Debajo de la barra superior
@@ -136,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-/// 🛠️ **Widget Botón de Filtro**
+/// Widget Boton de Filtro
 class FilterButton extends StatelessWidget {
   final String label;
 
@@ -146,7 +146,7 @@ class FilterButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
-        // Lógica de filtro
+        // Logica de filtro
       },
       child: Text(
         label,

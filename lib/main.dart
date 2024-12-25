@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Unique Streaming Catalog',
-      home: LoginScreen(), // Punto de entrada: pantalla de inicio de sesión
+      home: LoginScreen(), // Punto de entrada: pantalla de inicio de sesion
       debugShowCheckedModeBanner: false, // Elimina la etiqueta de debug
       initialRoute: AppRoutes.login,
       routes: AppRoutes.getRoutes(),
