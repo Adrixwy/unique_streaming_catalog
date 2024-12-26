@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'auth_service.dart';
+import 'forgot_password_screen.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -157,7 +158,10 @@ class _LoginScreenState extends State<LoginScreen> {
             if (!showRegisterFields)
               TextButton(
                 onPressed: () {
-                  // Navegar a la pantalla de recuperacion
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
+                  );
                 },
                 child: Text(
                   '¿Has olvidado tu contraseña?',

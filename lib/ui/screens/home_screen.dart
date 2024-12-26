@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart'; // Importamos para la navegación a la pantalla de inicio de sesión
+import 'auth_service.dart';
+import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -7,7 +8,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool showLogout = false; // Controla si se muestra el botón de cerrar sesión
+  bool showLogout = false; // Controla si se muestra el boton de cerrar sesion
+  String selectedPlatform = ''; // Plataforma seleccionada para el filtro
+
+  // Lista de plataformas con logos y nombres
+  final List<Map<String, String>> platforms = [
+    {'name': 'Netflix', 'logo': 'assets/logos/netflix.png'},
+    {'name': 'Disney+', 'logo': 'assets/logos/disney.png'},
+    {'name': 'Amazon Prime', 'logo': 'assets/logos/prime.png'},
+    {'name': 'Max', 'logo': 'assets/logos/max.png'},
+
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +30,13 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            /// Icono de Casa
+            /// Icono Casa
             IconButton(
               icon: Icon(Icons.home, color: Colors.white),
               onPressed: () {
-                // volver al inicio (o refrescar la pantalla)
+                setState(() {
+                  selectedPlatform = ''; // Reiniciar filtro
+                });
               },
             ),
 
@@ -31,19 +44,16 @@ class _HomeScreenState extends State<HomeScreen> {
             GestureDetector(
               onTap: () {
                 setState(() {
-                  showLogout = !showLogout; // Mostrar/ocultar boton cerrar sesion
+                  showLogout = !showLogout; // Mostrar/ocultar botón cerrar sesion
                 });
               },
               child: Row(
                 children: [
                   Text(
-                    'NombreUsuario', //aparecera nombre usuario registrado
+                    AuthService.loggedInUser ?? 'Usuario', // Nombre del usuario registrado
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
-                  Icon(
-                    Icons.arrow_drop_down,
-                    color: Colors.white,
-                  ),
+                  Icon(Icons.arrow_drop_down, color: Colors.white),
                 ],
               ),
             ),
@@ -51,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
-      /// Boton Cerrar Sesion (Desplegable)
+      /// Cuerpo Principal
       body: Stack(
         children: [
           Column(
@@ -91,11 +101,58 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 20),
 
-              /// Contenido del catalogo (Placeholder por ahora)
+              /// Filtros por Plataforma (Logos)
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: platforms.map((platform) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedPlatform = platform['name']!;
+                        });
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: selectedPlatform == platform['name']
+                              ? Colors.blueGrey[800]
+                              : Colors.grey[900],
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              platform['logo']!,
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.contain,
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              platform['name']!,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              SizedBox(height: 20),
+
+              /// Contenido Filtrado Catalogo
               Expanded(
                 child: Center(
                   child: Text(
-                    'Contenido del Catálogo',
+                    selectedPlatform.isEmpty
+                        ? 'Mostrando todo el catálogo'
+                        : 'Mostrando contenido de $selectedPlatform',
                     style: TextStyle(color: Colors.white54, fontSize: 18),
                   ),
                 ),
@@ -103,16 +160,17 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
 
-          /// Boton Cerrar Sesión
+          /// Boton Cerrar Sesion
           if (showLogout)
             Positioned(
-              top: kToolbarHeight + 10, // Debajo de la barra superior
+              top: kToolbarHeight + 10,
               right: 20,
               child: Material(
                 color: Colors.grey[800],
                 borderRadius: BorderRadius.circular(8.0),
                 child: InkWell(
                   onTap: () {
+                    AuthService.loggedInUser = null;
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -155,3 +213,4 @@ class FilterButton extends StatelessWidget {
     );
   }
 }
+

@@ -39,8 +39,36 @@ class AuthService {
     return 'Usuario registrado correctamente';
   }
 
-  /// Iniciar sesión
+  /// Iniciar sesion
+  static String? loggedInUser; // Almacenar nombre usuario que ha iniciado sesion
   static bool login(String username, String password) {
-    return _users.any((user) => user['username'] == username && user['password'] == password);
+    for (var user in _users) {
+      if (user['username'] == username && user['password'] == password) {
+        loggedInUser = user['username']; // Guarda el nombre de usuario
+        return true;
+      }
+    }
+    return false;
   }
+
+  /// Verificar si el correo existe
+  static bool emailExists(String email) {
+    return _users.any((user) => user['email'] == email);
+  }
+
+  /// Verificar Código de Restablecimiento
+  static bool verifyResetCode(String code) {
+    return code == '123456'; // Código fijo para la demo
+  }
+
+  /// Restablecer Contraseña
+  static void resetPassword(String email, String newPassword) {
+    for (var user in _users) {
+      if (user['email'] == email) {
+        user['password'] = newPassword;
+        break;
+      }
+    }
+  }
+
 }
