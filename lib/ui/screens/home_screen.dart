@@ -88,6 +88,32 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
 
+            // Buscador barra izquierda usuario
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      searchText = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Buscar...',
+                    hintStyle: TextStyle(color: Colors.white54),
+                    prefixIcon: Icon(Icons.search, color: Colors.white54),
+                    filled: true,
+                    fillColor: Colors.grey[800],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+
             /// Nombre de Usuario (cerrar sesion)
             GestureDetector(
               onTap: () {
@@ -115,29 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// Buscador
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      searchText = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Buscar...',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    prefixIcon: Icon(Icons.search, color: Colors.white54),
-                    filled: true,
-                    fillColor: Colors.grey[800],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
+
 
               /// Filtros Interactivos
               Row(
@@ -145,19 +149,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   FilterButton(
                     label: 'Películas',
-                    onTap: () => setState(() => selectedFilter = 'Película'),
+                    onTap: () => setState(() {
+                      selectedFilter = 'Película';
+                    }),
                   ),
                   FilterButton(
                     label: 'Series',
-                    onTap: () => setState(() => selectedFilter = 'Serie'),
+                    onTap: () => setState(() {
+                      selectedFilter = 'Serie';
+                    }),
                   ),
                   FilterButton(
                     label: 'Animación',
-                    onTap: () => setState(() => selectedFilter = 'Animación'),
+                    onTap: () => setState(() {
+                      selectedFilter = 'Animacion';
+                    }),
                   ),
                   FilterButton(
                     label: 'Listas',
-                    onTap: () => setState(() => selectedFilter = 'Listas'),
+                    onTap: () => setState(() {
+                      selectedFilter = 'Listas';
+                    }),
                   ),
                 ],
               ),
@@ -209,32 +221,52 @@ class _HomeScreenState extends State<HomeScreen> {
 
               /// Catalogo
               Expanded(
-                child: GridView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, // Dos columnas
-                    crossAxisSpacing: 16.0, // Espaciado horizontal
-                    mainAxisSpacing: 16.0, // Espaciado vertical
-                    childAspectRatio: 0.75, // ajustar altura y ancho
-                  ),
-                  itemCount: filteredCatalog.length,
-                  itemBuilder: (context, index) {
-                    final content = filteredCatalog[index];
-                    return GestureDetector(
-                      onTap: () {
-                        if (content['type'] == 'Serie') {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SerieScreen(seriesData: content),
-                            ),
-                          );
-                        } else {
-                          // Abrir enlace externo
-                          print('Abrir enlace: ${content['link']}');
-                        }
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    int crossAxisCount = 2; // Default to 2 columns
+
+                    // Si la pantalla es lo suficientemente ancha, se aumentan las columnas
+                    if (constraints.maxWidth > 600) {
+                      crossAxisCount = 7; // 7 columnas en pantallas más grandes
+                    }
+
+                    // Calculo aspecto dinamicamente
+                    double aspectRatio = 1.0; // mantener caratulas completas
+
+                    // Ajustar aspecto dependiendo numero columnas
+                    if (crossAxisCount > 2) {
+                      aspectRatio = 0.35; // mas ancho pantallas mas grandes
+                    } else {
+                      aspectRatio = 0.7; // menos ancho pantallas mas pequeñas
+                    }
+
+                    return GridView.builder(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount, // Número de columnas dinámico
+                        crossAxisSpacing: 16.0, // Espaciado horizontal
+                        mainAxisSpacing: 20.0, // Espaciado vertical
+                        childAspectRatio: aspectRatio, // Proporción ajustada para las carátulas
+                      ),
+                      itemCount: filteredCatalog.length,
+                      itemBuilder: (context, index) {
+                        final content = filteredCatalog[index];
+                        return GestureDetector(
+                          onTap: () {
+                            if (content['type'] == 'Serie') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SerieScreen(seriesData: content),
+                                ),
+                              );
+                            } else {
+                              print('Abrir enlace: ${content['link']}');
+                            }
+                          },
+                          child: ContentCard(content: content),
+                        );
                       },
-                      child: ContentCard(content: content),
                     );
                   },
                 ),
@@ -242,8 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
 
-
-          /// Boton Cerrar Sesion
+              /// Boton Cerrar Sesion
           if (showLogout)
             Positioned(
               top: kToolbarHeight + 10,
@@ -271,11 +302,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-        ],
-      ),
-    );
-  }
-}
+          ],
+         ),
+        );
+      }
+    }
 
 /// Widget Boton de Filtro
 class FilterButton extends StatelessWidget {

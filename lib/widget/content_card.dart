@@ -21,7 +21,7 @@ class ContentCard extends StatelessWidget {
                 content['image'],
                 fit: BoxFit.cover,
                 width: double.infinity,
-                height: 140, // Altura fija para uniformidad
+                height: 210, // Altura fija ver caratula completa
               ),
             ),
 
