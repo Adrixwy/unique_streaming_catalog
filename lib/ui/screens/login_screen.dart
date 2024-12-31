@@ -78,13 +78,18 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 80),
             // Imagen cabecera ancho pantalla
             Image.asset(
-              'assets/images/intro_image.png',
+              'assets/imagenes/Solo Nombre.jpg',
               width: MediaQuery.of(context).size.width,
               fit: BoxFit.cover,
             ),
             SizedBox(height: 20),
             // Logo app
-            Icon(Icons.movie, color: Colors.white, size: 100),
+            Image.asset(
+              'assets/imagenes/Solo Logo1.jpg',
+              width: 100, // Ancho
+              height: 100, // Alto
+              fit: BoxFit.contain,
+            ),
             SizedBox(height: 20),
 
             // Usuario

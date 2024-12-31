@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:unique_streaming_catalog/widget/content_card.dart';
 import 'auth_service.dart';
 import 'login_screen.dart';
+import 'series_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -10,15 +12,59 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool showLogout = false; // Controla si se muestra el boton de cerrar sesion
   String selectedPlatform = ''; // Plataforma seleccionada para el filtro
+  String selectedFilter = ''; // Filtro seleccionado (Peliculas, Series, etc.)
+  String searchText = ''; // Texto del buscador
 
   // Lista de plataformas con logos y nombres
   final List<Map<String, String>> platforms = [
-    {'name': 'Netflix', 'logo': 'assets/logos/netflix.png'},
-    {'name': 'Disney+', 'logo': 'assets/logos/disney.png'},
-    {'name': 'Amazon Prime', 'logo': 'assets/logos/prime.png'},
-    {'name': 'Max', 'logo': 'assets/logos/max.png'},
+    {'name': 'Netflix', 'logo': 'assets/imagenes/LogoNetflix.jpg'},
+    {'name': 'Disney+', 'logo': 'assets/imagenes/Disney_logo.jpg'},
+    {'name': 'Prime Video', 'logo': 'assets/imagenes/Prime_logo.jpg'},
+    {'name': 'Max', 'logo': 'assets/imagenes/Max_logo.jpg'},
 
   ];
+
+
+  // Datos de ejemplo del catalogo
+  final List<Map<String, dynamic>> catalog = [
+    {
+      'title': 'Stranger Things',
+      'type': 'Serie',
+      'platform': 'Netflix',
+      'image': 'assets/imagenes/Stranger Things1.jpg',
+      'link': 'https://netflix.com/strangerthings'
+    },
+    {
+      'title': 'El Rey Leon',
+      'type': 'Película',
+      'platform': 'Disney+',
+      'image': 'assets/imagenes/el-rey-leon.avif',
+      'link': 'https://disneyplus.com/el rey leon'
+    },
+    {
+      'title': 'The Boys',
+      'type': 'Serie',
+      'platform': 'Prime Video',
+      'image': 'assets/imagenes/the-boys.avif',
+      'link': 'https://primevideo.com/theboys'
+    },
+  ];
+
+  /// Filtrar el catalogo
+  List<Map<String, dynamic>> get filteredCatalog {
+    return catalog.where((content) {
+      final matchesPlatform = selectedPlatform.isEmpty ||
+          content['platform'] == selectedPlatform;
+      final matchesFilter = selectedFilter.isEmpty ||
+          content['type'] == selectedFilter;
+      final matchesSearch = searchText.isEmpty ||
+          content['title']
+              .toLowerCase()
+              .contains(searchText.toLowerCase());
+
+      return matchesPlatform && matchesFilter && matchesSearch;
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(Icons.home, color: Colors.white),
               onPressed: () {
                 setState(() {
-                  selectedPlatform = ''; // Reiniciar filtro
+                  selectedPlatform = ''; // Reiniciar filtros
+                  selectedFilter = '';
+                  searchText = '';
                 });
               },
             ),
@@ -71,6 +119,11 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      searchText = value;
+                    });
+                  },
                   decoration: InputDecoration(
                     hintText: 'Buscar...',
                     hintStyle: TextStyle(color: Colors.white54),
@@ -87,19 +140,27 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               /// Filtros Interactivos
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    FilterButton(label: 'Películas'),
-                    FilterButton(label: 'Series'),
-                    FilterButton(label: 'Animación'),
-                    FilterButton(label: 'Listas'),
-                  ],
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  FilterButton(
+                    label: 'Películas',
+                    onTap: () => setState(() => selectedFilter = 'Película'),
+                  ),
+                  FilterButton(
+                    label: 'Series',
+                    onTap: () => setState(() => selectedFilter = 'Serie'),
+                  ),
+                  FilterButton(
+                    label: 'Animación',
+                    onTap: () => setState(() => selectedFilter = 'Animación'),
+                  ),
+                  FilterButton(
+                    label: 'Listas',
+                    onTap: () => setState(() => selectedFilter = 'Listas'),
+                  ),
+                ],
               ),
-              SizedBox(height: 20),
 
               /// Filtros por Plataforma (Logos)
               SingleChildScrollView(
@@ -146,19 +207,41 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 20),
 
-              /// Contenido Filtrado Catalogo
+              /// Catalogo
               Expanded(
-                child: Center(
-                  child: Text(
-                    selectedPlatform.isEmpty
-                        ? 'Mostrando todo el catálogo'
-                        : 'Mostrando contenido de $selectedPlatform',
-                    style: TextStyle(color: Colors.white54, fontSize: 18),
+                child: GridView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, // Dos columnas
+                    crossAxisSpacing: 16.0, // Espaciado horizontal
+                    mainAxisSpacing: 16.0, // Espaciado vertical
+                    childAspectRatio: 0.75, // ajustar altura y ancho
                   ),
+                  itemCount: filteredCatalog.length,
+                  itemBuilder: (context, index) {
+                    final content = filteredCatalog[index];
+                    return GestureDetector(
+                      onTap: () {
+                        if (content['type'] == 'Serie') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SerieScreen(seriesData: content),
+                            ),
+                          );
+                        } else {
+                          // Abrir enlace externo
+                          print('Abrir enlace: ${content['link']}');
+                        }
+                      },
+                      child: ContentCard(content: content),
+                    );
+                  },
                 ),
               ),
             ],
           ),
+
 
           /// Boton Cerrar Sesion
           if (showLogout)
@@ -198,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
 class FilterButton extends StatelessWidget {
   final String label;
 
-  FilterButton({required this.label});
+  FilterButton({required this.label, required void Function() onTap});
 
   @override
   Widget build(BuildContext context) {
