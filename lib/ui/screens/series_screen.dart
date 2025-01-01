@@ -15,45 +15,79 @@ class _SerieScreenState extends State<SerieScreen> {
   String searchText = ''; // Texto del buscador
   bool showLogout = false; // Controla si se muestra el boton de cerrar sesion
 
+  // Control de estado para temporadas y capítulos vistos
+  Map<int, bool> watchedSeasons = {};
+  Map<String, bool> watchedEpisodes = {};
+
   // Datos de ejemplo de episodios por temporada
-  Map<int, List<Map<String, String>>> seasonEpisodes = {
-    1: [
-      {'title': 'Capítulo 1', 'link': 'https://netflix.com/ep1'},
-      {'title': 'Capítulo 2', 'link': 'https://netflix.com/ep2'},
-    ],
-    2: [
-      {'title': 'Capítulo 1', 'link': 'https://netflix.com/s2ep1'},
-      {'title': 'Capítulo 2', 'link': 'https://netflix.com/s2ep2'},
-    ],
+  Map<String, Map<int, Map<String, dynamic>>> seriesSeasonsData = {
+    'Stranger Things': {
+      1: {
+        'image': 'assets/imagenes/Stranger Things temporada-1.avif',
+        'episodes': [
+          {'season': 1, 'chapter': 1,'title': 'Capítulo 1', 'link': 'https://netflix.com/ep1'},
+          {'season': 1, 'chapter': 2,'title': 'Capítulo 2', 'link': 'https://netflix.com/ep2'},
+        ],
+      },
+      2: {
+        'image': 'assets/imagenes/Stranger Things temporada-2.avif',
+        'episodes': [
+          {'season': 2, 'chapter': 1,'title': 'Capítulo 1', 'link': 'https://netflix.com/s2ep1'},
+          {'season': 2, 'chapter': 2,'title': 'Capítulo 2', 'link': 'https://netflix.com/s2ep2'},
+        ],
+      },
+     },
+    'The Boys': {
+      1: {
+        'image': 'assets/imagenes/The Boys temporada-1.avif',
+        'episodes': [
+          {'season': 1, 'chapter': 1,'title': 'Capítulo 1', 'link': 'https://netflix.com/ep1'},
+          {'season': 1, 'chapter': 2,'title': 'Capítulo 2', 'link': 'https://netflix.com/ep2'},
+        ],
+      },
+      2: {
+        'image': 'assets/imagenes/The Boys temporada-2.avif',
+        'episodes': [
+         {'season': 2, 'chapter': 1,'title': 'Capítulo 1', 'link': 'https://netflix.com/s2ep1'},
+         {'season': 2, 'chapter': 2,'title': 'Capítulo 2', 'link': 'https://netflix.com/s2ep2'},
+        ],
+      },
+    },
   };
 
   /// Comprueba si una temporada esta marcada como vista
   bool isSeasonWatched(int season) {
-    // Logica temporada marcada como vista
-    return false;
+    return watchedSeasons[season] ?? false;
   }
 
   /// Comprueba si un capitulo esta marcado como visto
-  bool isEpisodeWatched(String episodeTitle) {
-    // Logica capítulo marcado como visto
-    return false;
+  bool isEpisodeWatched(int season, int chapter) {
+    String key = 'T${season}E${chapter}';
+    return watchedEpisodes[key] ?? false;
   }
 
+
   /// Marca una temporada como vista
-  void markSeasonAsWatched(int season) {
-    // Logica marcar toda la temporada como vista
-    setState(() {});
+  void toggleSeasonWatched(int season) {
+    setState(() {
+      watchedSeasons[season] = !(watchedSeasons[season] ?? false);
+    });
   }
 
   /// Marca un capítulo como visto
-  void markEpisodeAsWatched(String episodeTitle) {
-    // Logica marcar capítulo como visto
-    setState(() {});
+  void toggleEpisodeWatched(int season, int chapter) {
+    String key = 'T${season}E${chapter}';
+    setState(() {
+      watchedEpisodes[key] = !(watchedEpisodes[key] ?? false);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final series = widget.seriesData;
+    final String seriesTitle = series['title']; // Título de la serie seleccionada
+    final Map<int, Map<String, dynamic>> seasonData = seriesSeasonsData[seriesTitle] ?? {};
+
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -62,7 +96,7 @@ class _SerieScreenState extends State<SerieScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            /// Botón Home
+            /// Boton Home
             IconButton(
               icon: Icon(Icons.home, color: Colors.white),
               onPressed: () {
@@ -175,12 +209,11 @@ class _SerieScreenState extends State<SerieScreen> {
                   ),
                 ),
                 Column(
-                  children: seasonEpisodes.keys.map((season) {
+                  children: seasonData.keys.map((season) {
                     return GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedSeason =
-                          selectedSeason == season ? null : season;
+                          selectedSeason = selectedSeason == season ? null : season;
                         });
                       },
                       child: Container(
@@ -191,33 +224,48 @@ class _SerieScreenState extends State<SerieScreen> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Temporada $season',
-                              style: TextStyle(color: Colors.white),
+                            /// Carátula de la Temporada
+                            Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(seasonData[season]?['image'] ?? series['image']),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
                             ),
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.remove_red_eye,
-                                    color: isSeasonWatched(season)
-                                        ? Colors.green
-                                        : Colors.white54,
-                                  ),
-                                  onPressed: () {
-                                    markSeasonAsWatched(season);
-                                  },
-                                ),
-                                Icon(
-                                  selectedSeason == season
-                                      ? Icons.expand_less
-                                      : Icons.expand_more,
-                                  color: Colors.white,
-                                ),
-                              ],
-                            )
+                            SizedBox(width: 10),
+
+                            /// Información de la Temporada
+                            Expanded(
+                              child: Text(
+                                'Temporada $season',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+
+                            /// Ojo Interactivo
+                            IconButton(
+                              icon: Icon(
+                                Icons.remove_red_eye,
+                                color: isSeasonWatched(season)
+                                    ? Colors.green
+                                    : Colors.white54,
+                              ),
+                              onPressed: () {
+                                toggleSeasonWatched(season);
+                              },
+                            ),
+
+                            Icon(
+                              selectedSeason == season
+                                  ? Icons.expand_less
+                                  : Icons.expand_more,
+                              color: Colors.white,
+                            ),
                           ],
                         ),
                       ),
@@ -225,44 +273,28 @@ class _SerieScreenState extends State<SerieScreen> {
                   }).toList(),
                 ),
 
-                /// Lista de Capítulos (si hay una temporada seleccionada)
+                /// Lista de Capítulos
                 if (selectedSeason != null)
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: seasonEpisodes[selectedSeason]!
-                        .asMap()
-                        .entries
-                        .map((entry) {
-                      final index = entry.key + 1;
-                      final episode = entry.value;
-
+                    children: (seasonData[selectedSeason]?['episodes'] as List).map<Widget>((episode) {
                       return ListTile(
-                        contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16.0),
                         leading: IconButton(
                           icon: Icon(
                             Icons.remove_red_eye,
-                            color: isEpisodeWatched(episode['title']!)
+                            color: isEpisodeWatched(episode['season'], episode['chapter'])
                                 ? Colors.green
                                 : Colors.white54,
                           ),
                           onPressed: () {
-                            markEpisodeAsWatched(episode['title']!);
+                            toggleEpisodeWatched(episode['season'], episode['chapter']); // Llamada a la funcion
                           },
                         ),
-                        title: GestureDetector(
-                          onTap: () {
-                            launchPlatformLink(episode['link']!);
-                          },
-                          child: Text(
-                            'Capítulo $index: ${episode['title']}',
-                            style: TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline),
-                          ),
+                        title: Text(
+                          'T${episode['season']}E${episode['chapter']} - ${episode['title']}', // Título con temporada y capítulo
+                          style: TextStyle(color: Colors.white),
                         ),
                       );
-                    }).toList(),
+                  }).toList(),
                   ),
               ],
             ),
