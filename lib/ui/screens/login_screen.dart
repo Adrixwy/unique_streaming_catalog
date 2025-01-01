@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  ///  Inicio de Sesion
+  /// Inicio de Sesion
   void handleLogin() {
     String username = usernameController.text.trim();
     String password = passwordController.text.trim();
@@ -71,138 +71,160 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(height: 80),
-            // Imagen cabecera ancho pantalla
-            Image.asset(
-              'assets/imagenes/Solo Nombre.jpg',
-              width: MediaQuery.of(context).size.width,
-              fit: BoxFit.cover,
-            ),
-            SizedBox(height: 20),
-            // Logo app
-            Image.asset(
-              'assets/imagenes/Solo Logo1.jpg',
-              width: 100, // Ancho
-              height: 100, // Alto
-              fit: BoxFit.contain,
-            ),
-            SizedBox(height: 20),
+      body: Center(
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 400), // Máximo ancho
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 40),
 
-            // Usuario
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
-              child: TextField(
-                controller: usernameController,
-                decoration: InputDecoration(
-                  hintText: 'Usuario',
-                  hintStyle: TextStyle(color: Colors.white54),
-                  border: OutlineInputBorder(),
+                // Nombre App (ajustes y proporciones)
+                Image.asset(
+                  'assets/imagenes/Solo Nombre.jpg',
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: 120,
+                  fit: BoxFit.contain,
                 ),
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+                SizedBox(height: 20),
 
-            if (showRegisterFields) ...[
-              SizedBox(height: 10),
-              // Correo Electronico
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    hintText: 'Correo Electrónico',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    border: OutlineInputBorder(),
+                // Logo  App
+                Image.asset(
+                  'assets/imagenes/Solo Logo1.jpg',
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.contain,
+                ),
+                SizedBox(height: 30),
+
+                // Campo Usuario
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    controller: usernameController,
+                    decoration: InputDecoration(
+                      hintText: 'Usuario',
+                      hintStyle: TextStyle(color: Colors.white54),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      filled: true,
+                      fillColor: Colors.grey[850],
+                    ),
+                    style: TextStyle(color: Colors.white),
                   ),
-                  style: TextStyle(color: Colors.white),
                 ),
-              ),
-            ],
 
-            SizedBox(height: 10),
-            // Contraseña
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
-              child: TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: 'Contraseña',
-                  hintStyle: TextStyle(color: Colors.white54),
-                  border: OutlineInputBorder(),
-                ),
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-
-            if (showRegisterFields) ...[
-              SizedBox(height: 10),
-              // Repetir Contraseña
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: TextField(
-                  controller: repeatPasswordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: 'Repetir Contraseña',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    border: OutlineInputBorder(),
+                if (showRegisterFields) ...[
+                  SizedBox(height: 10),
+                  // Correo
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        hintText: 'Correo Electrónico',
+                        hintStyle: TextStyle(color: Colors.white54),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        filled: true,
+                        fillColor: Colors.grey[850],
+                      ),
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                  style: TextStyle(color: Colors.white),
+                ],
+
+                SizedBox(height: 10),
+                // Contraseña
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: 'Contraseña',
+                      hintStyle: TextStyle(color: Colors.white54),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      filled: true,
+                      fillColor: Colors.grey[850],
+                    ),
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
-              ),
-            ],
 
-            SizedBox(height: 10),
+                if (showRegisterFields) ...[
+                  SizedBox(height: 10),
+                  // Repetir Contraseña
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextField(
+                      controller: repeatPasswordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: 'Repetir Contraseña',
+                        hintStyle: TextStyle(color: Colors.white54),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        filled: true,
+                        fillColor: Colors.grey[850],
+                      ),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
 
-            // Reseteo contraseña
-            if (!showRegisterFields)
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
-                  );
-                },
-                child: Text(
-                  '¿Has olvidado tu contraseña?',
-                  style: TextStyle(color: Colors.white),
+                SizedBox(height: 15),
+
+                // Boton Resetear Contraseña
+                if (!showRegisterFields)
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
+                      );
+                    },
+                    child: Text(
+                      '¿Has olvidado tu contraseña?',
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                  ),
+
+                SizedBox(height: 10),
+
+                // Boton Logueo y registro
+                SizedBox(
+                  width: 200,
+                  child: ElevatedButton(
+                    onPressed: showRegisterFields ? handleRegister : handleLogin,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: Text(showRegisterFields ? 'Registrarme' : 'Iniciar Sesión'),
+                  ),
                 ),
-              ),
 
-            SizedBox(height: 10),
+                SizedBox(height: 10),
 
-            // Boton de accion principal
-            ElevatedButton(
-              onPressed: showRegisterFields ? handleRegister : handleLogin,
-              child: Text(showRegisterFields ? 'Registrarme' : 'Iniciar Sesión'),
+                // Alternar entre modos
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      showRegisterFields = !showRegisterFields;
+                    });
+                  },
+                  child: Text(
+                    showRegisterFields
+                        ? '¿Ya tienes una cuenta? Inicia sesión'
+                        : '¿No tienes una cuenta? Regístrate',
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                ),
+              ],
             ),
-
-            SizedBox(height: 10),
-
-            // Alternar entre modos
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  showRegisterFields = !showRegisterFields;
-                });
-              },
-              child: Text(
-                showRegisterFields
-                    ? '¿Ya tienes una cuenta? Inicia sesión'
-                    : '¿No tienes una cuenta? Regístrate',
-                style: TextStyle(color: Colors.blue),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
-
-

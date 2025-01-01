@@ -25,15 +25,15 @@ class _SerieScreenState extends State<SerieScreen> {
       1: {
         'image': 'assets/imagenes/Stranger Things temporada-1.avif',
         'episodes': [
-          {'season': 1, 'chapter': 1,'title': 'Capítulo 1', 'link': 'https://netflix.com/ep1'},
-          {'season': 1, 'chapter': 2,'title': 'Capítulo 2', 'link': 'https://netflix.com/ep2'},
+          {'season': 1, 'chapter': 1,'title': 'Capítulo 1', 'duration': 50, 'link': 'https://netflix.com/ep1'},
+          {'season': 1, 'chapter': 2,'title': 'Capítulo 2', 'duration': 50, 'link': 'https://netflix.com/ep2'},
         ],
       },
       2: {
         'image': 'assets/imagenes/Stranger Things temporada-2.avif',
         'episodes': [
-          {'season': 2, 'chapter': 1,'title': 'Capítulo 1', 'link': 'https://netflix.com/s2ep1'},
-          {'season': 2, 'chapter': 2,'title': 'Capítulo 2', 'link': 'https://netflix.com/s2ep2'},
+          {'season': 2, 'chapter': 1,'title': 'Capítulo 1', 'duration': 50, 'link': 'https://netflix.com/s2ep1'},
+          {'season': 2, 'chapter': 2,'title': 'Capítulo 2', 'duration': 50, 'link': 'https://netflix.com/s2ep2'},
         ],
       },
      },
@@ -41,15 +41,15 @@ class _SerieScreenState extends State<SerieScreen> {
       1: {
         'image': 'assets/imagenes/The Boys temporada-1.avif',
         'episodes': [
-          {'season': 1, 'chapter': 1,'title': 'Capítulo 1', 'link': 'https://netflix.com/ep1'},
-          {'season': 1, 'chapter': 2,'title': 'Capítulo 2', 'link': 'https://netflix.com/ep2'},
+          {'season': 1, 'chapter': 1,'title': 'Capítulo 1', 'duration': 48, 'link': 'https://netflix.com/ep1'},
+          {'season': 1, 'chapter': 2,'title': 'Capítulo 2', 'duration': 48, 'link': 'https://netflix.com/ep2'},
         ],
       },
       2: {
         'image': 'assets/imagenes/The Boys temporada-2.avif',
         'episodes': [
-         {'season': 2, 'chapter': 1,'title': 'Capítulo 1', 'link': 'https://netflix.com/s2ep1'},
-         {'season': 2, 'chapter': 2,'title': 'Capítulo 2', 'link': 'https://netflix.com/s2ep2'},
+         {'season': 2, 'chapter': 1,'title': 'Capítulo 1', 'duration': 48, 'link': 'https://netflix.com/s2ep1'},
+         {'season': 2, 'chapter': 2,'title': 'Capítulo 2', 'duration': 48, 'link': 'https://netflix.com/s2ep2'},
         ],
       },
     },
@@ -290,7 +290,8 @@ class _SerieScreenState extends State<SerieScreen> {
                           },
                         ),
                         title: Text(
-                          'T${episode['season']}E${episode['chapter']} - ${episode['title']}', // Título con temporada y capítulo
+                          'T${episode['season']} - E${episode['chapter']}  ${episode['title']}  '
+                              '${episode['duration']} mins', // Título con temporada y capítulo
                           style: TextStyle(color: Colors.white),
                         ),
                       );
