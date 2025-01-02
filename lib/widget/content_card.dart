@@ -1,10 +1,26 @@
 import 'package:flutter/material.dart';
 import 'plataform_data.dart';
 
-class ContentCard extends StatelessWidget {
+class ContentCard extends StatefulWidget {
   final Map<String, dynamic> content;
+  final VoidCallback onFavoriteTap;
+  final VoidCallback onWatchedTap;
 
-  ContentCard({required this.content});
+
+  ContentCard({
+    required this.content,
+    required this.onFavoriteTap,
+    required this.onWatchedTap,
+  });
+
+  @override
+  _ContentCardState createState() => _ContentCardState();
+}
+
+class _ContentCardState extends State<ContentCard> {
+  bool isFavorite = false; // Estado para la estrella
+  bool isWatched = false; // Estado para el ojo
+
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +34,7 @@ class ContentCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Image.asset(
-                content['image'],
+                widget.content['image'],
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: 210, // Altura fija ver caratula completa
@@ -30,7 +46,7 @@ class ContentCard extends StatelessWidget {
               bottom: 4,
               left: 4,
               child: Image.asset(
-                getPlatformLogo(content['platform']),
+                getPlatformLogo(widget.content['platform']),
                 width: 24,
                 height: 24,
                 fit: BoxFit.contain,
@@ -42,11 +58,9 @@ class ContentCard extends StatelessWidget {
               top: 4,
               left: 4,
               child: GestureDetector(
-                onTap: () {
-                  print('${content['title']} añadido a favoritos');
-                },
+                onTap: widget.onFavoriteTap,// Alternar estado favorito
                 child: Icon(
-                  Icons.star_border,
+                  widget.content['isFavorite'] ? Icons.star : Icons.star_border,
                   color: Colors.yellow,
                   size: 24,
                 ),
@@ -58,12 +72,10 @@ class ContentCard extends StatelessWidget {
               top: 4,
               right: 4,
               child: GestureDetector(
-                onTap: () {
-                  print('${content['title']} marcado como visto');
-                },
+                onTap: widget.onWatchedTap, // Alternar estado visto
                 child: Icon(
-                  Icons.visibility_outlined,
-                  color: Colors.green,
+                  widget.content['isWatched'] ? Icons.visibility : Icons.visibility_outlined,
+                  color: widget.content['isWatched'] ? Colors.green : Colors.grey,
                   size: 24,
                 ),
               ),
@@ -75,7 +87,7 @@ class ContentCard extends StatelessWidget {
 
         /// Titulo debajo  imagen (centrado)
         Text(
-          content['title'],
+          widget.content['title'],
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,

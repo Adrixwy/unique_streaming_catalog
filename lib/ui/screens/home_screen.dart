@@ -32,21 +32,27 @@ class _HomeScreenState extends State<HomeScreen> {
       'type': 'Serie',
       'platform': 'Netflix',
       'image': 'assets/imagenes/Stranger Things1.jpg',
-      'link': 'https://netflix.com/strangerthings'
+      'link': 'https://netflix.com/strangerthings',
+      'isFavorite': false,
+      'isWatched': false,
     },
     {
       'title': 'El Rey Leon',
       'type': 'Película',
       'platform': 'Disney+',
       'image': 'assets/imagenes/el-rey-leon.avif',
-      'link': 'https://disneyplus.com/el rey leon'
+      'link': 'https://disneyplus.com/el rey leon',
+      'isFavorite': false,
+      'isWatched': false,
     },
     {
       'title': 'The Boys',
       'type': 'Serie',
       'platform': 'Prime Video',
       'image': 'assets/imagenes/the-boys.avif',
-      'link': 'https://primevideo.com/theboys'
+      'link': 'https://primevideo.com/theboys',
+      'isFavorite': false,
+      'isWatched': false,
     },
   ];
 
@@ -56,7 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
       final matchesPlatform = selectedPlatform.isEmpty ||
           content['platform'] == selectedPlatform;
       final matchesFilter = selectedFilter.isEmpty ||
-          content['type'] == selectedFilter;
+          content['type'] == selectedFilter ||
+          (selectedFilter == 'Favoritos' && content['isFavorite']) ||
+          (selectedFilter == 'Vistos' && content['isWatched']);
       final matchesSearch = searchText.isEmpty ||
           content['title']
               .toLowerCase()
@@ -165,11 +173,30 @@ class _HomeScreenState extends State<HomeScreen> {
                       selectedFilter = 'Animacion';
                     }),
                   ),
-                  FilterButton(
-                    label: 'Listas',
-                    onTap: () => setState(() {
-                      selectedFilter = 'Listas';
-                    }),
+                  // Mostrar desplegable para Mis Listas
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.list, color: Colors.white),
+                    onSelected: (String value) {
+                      setState(() {
+                        // Si ya está seleccionado, no lo sobrescribes
+                        if (selectedFilter != value) {
+                          selectedFilter = value;
+                        }
+                      });
+                    },
+                    itemBuilder: (BuildContext context) {
+                      return [
+                        PopupMenuItem<String>(
+                          value: 'Favoritos',
+                          child: Text('Favoritos', style: TextStyle(color: Colors.white)),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'Vistos',
+                          child: Text('Vistos', style: TextStyle(color: Colors.white)),
+                        ),
+                      ];
+                    },
+                    color: Colors.black.withOpacity(0.8), // Fondo translúcido
                   ),
                 ],
               ),
@@ -243,10 +270,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     return GridView.builder(
                       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount, // Número de columnas dinámico
+                        crossAxisCount: crossAxisCount, // Número de columnas dinamico
                         crossAxisSpacing: 16.0, // Espaciado horizontal
                         mainAxisSpacing: 20.0, // Espaciado vertical
-                        childAspectRatio: aspectRatio, // Proporción ajustada para las carátulas
+                        childAspectRatio: aspectRatio, // Proporcion ajustada para las caratulas
                       ),
                       itemCount: filteredCatalog.length,
                       itemBuilder: (context, index) {
@@ -264,7 +291,23 @@ class _HomeScreenState extends State<HomeScreen> {
                               print('Abrir enlace: ${content['link']}');
                             }
                           },
-                          child: ContentCard(content: content),
+                          child: ContentCard(content: content,
+                            onFavoriteTap: () {
+                              setState(() {
+                                content['isFavorite'] = !content['isFavorite'];// Alternar favorito
+                                print('${content['title']} '
+                                    '${content['isFavorite'] ? 'añadido a favoritos' : 'eliminado de favoritos'}');
+
+                              });
+                            },
+                            onWatchedTap: () {
+                              setState(() {
+                                content['isWatched'] = !content['isWatched']; // Alternar visto
+                                print('${content['title']} '
+                                    '${content['isWatched'] ? 'marcado como visto' : 'marcado como no visto'}');
+                              });
+                            },
+                          ),
                         );
                       },
                     );
@@ -274,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
 
-              /// Boton Cerrar Sesion
+          /// Boton Cerrar Sesion
           if (showLogout)
             Positioned(
               top: kToolbarHeight + 10,
@@ -302,24 +345,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-          ],
-         ),
-        );
-      }
-    }
+        ],
+      ),
+    );
+  }
+}
 
 /// Widget Boton de Filtro
 class FilterButton extends StatelessWidget {
   final String label;
+  final VoidCallback onTap; // Aseguramos que se reciba una funcion
 
-  FilterButton({required this.label, required void Function() onTap});
+  FilterButton({required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () {
-        // Logica de filtro
-      },
+      onPressed: onTap, // Llama correctamente a la función proporcionada
       child: Text(
         label,
         style: TextStyle(color: Colors.white, fontSize: 14),
@@ -327,4 +369,3 @@ class FilterButton extends StatelessWidget {
     );
   }
 }
-
