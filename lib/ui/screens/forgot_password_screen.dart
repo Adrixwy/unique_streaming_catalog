@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'auth_service.dart';
+import '../../services/api_service.dart';
 import 'login_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -18,7 +18,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   bool codeSent = false; // Estado para alternar entre las dos vistas
 
   /// Enviar Código al Correo
-  void sendCode() {
+  void sendCode() async {
     String email = emailController.text.trim();
 
     if (email.isEmpty) {
@@ -28,31 +28,31 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       return;
     }
 
-    if (!AuthService.isValidEmail(email)) {
+    if (!ApiService.isValidEmail(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('El formato del correo es incorrecto')),
       );
       return;
     }
 
-    bool emailExists = AuthService.emailExists(email);
-
-    if (emailExists) {
+    try {
+      // Enviar la solicitud al backend para enviar el código
+      var response = await ApiService.sendResetCode(email);
       setState(() {
         codeSent = true;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Se ha enviado un código a tu correo electrónico')),
       );
-    } else {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('El correo electrónico no está registrado')),
+        SnackBar(content: Text('El correo electrónico no está registrado o hubo un error')),
       );
     }
   }
 
   /// Resetear Contraseña
-  void resetPassword() {
+  void resetPassword() async {
     String code = codeController.text.trim();
     String newPassword = newPasswordController.text.trim();
     String repeatPassword = repeatPasswordController.text.trim();
@@ -71,8 +71,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       return;
     }
 
-    if (AuthService.verifyResetCode(code)) {
-      AuthService.resetPassword(emailController.text, newPassword);
+    try {
+      // Restablecer la contraseña usando el código
+      var response = await ApiService.resetPassword(code, newPassword);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Contraseña reseteada correctamente')),
       );
@@ -80,9 +81,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
       );
-    } else {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('El código es incorrecto')),
+        SnackBar(content: Text('El código es incorrecto o hubo un error')),
       );
     }
   }
@@ -99,75 +100,79 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: Padding(
           padding: const EdgeInsets.all(32.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 40),
-              Text(
-                codeSent ? 'Restablecer Contraseña' : 'Ingresa tu Correo',
-                style: TextStyle(fontSize: 24, color: Colors.white),
-              ),
-              SizedBox(height: 20),
-
-              // Correo Electrónico (Primer Paso)
+              // Vista para ingresar el correo
               if (!codeSent)
-                TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    hintText: 'Correo Electrónico',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    border: OutlineInputBorder(),
-                  ),
-                  style: TextStyle(color: Colors.white),
+                Column(
+                  children: [
+                    TextField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Correo electrónico',
+                        labelStyle: TextStyle(color: Colors.white),
+                        filled: true,
+                        fillColor: Colors.grey[800],
+                        border: OutlineInputBorder(),
+                      ),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: sendCode,
+                      child: Text('Enviar código'),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    ),
+                  ],
+                )
+              else
+              // Vista para ingresar el código y la nueva contraseña
+                Column(
+                  children: [
+                    TextField(
+                      controller: codeController,
+                      decoration: InputDecoration(
+                        labelText: 'Código de verificación',
+                        labelStyle: TextStyle(color: Colors.white),
+                        filled: true,
+                        fillColor: Colors.grey[800],
+                        border: OutlineInputBorder(),
+                      ),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(height: 20),
+                    TextField(
+                      controller: newPasswordController,
+                      decoration: InputDecoration(
+                        labelText: 'Nueva contraseña',
+                        labelStyle: TextStyle(color: Colors.white),
+                        filled: true,
+                        fillColor: Colors.grey[800],
+                        border: OutlineInputBorder(),
+                      ),
+                      style: TextStyle(color: Colors.white),
+                      obscureText: true,
+                    ),
+                    SizedBox(height: 20),
+                    TextField(
+                      controller: repeatPasswordController,
+                      decoration: InputDecoration(
+                        labelText: 'Repetir contraseña',
+                        labelStyle: TextStyle(color: Colors.white),
+                        filled: true,
+                        fillColor: Colors.grey[800],
+                        border: OutlineInputBorder(),
+                      ),
+                      style: TextStyle(color: Colors.white),
+                      obscureText: true,
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: resetPassword,
+                      child: Text('Restablecer contraseña'),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    ),
+                  ],
                 ),
-
-              if (!codeSent)
-                SizedBox(height: 20),
-
-              if (!codeSent)
-                ElevatedButton(
-                  onPressed: sendCode,
-                  child: Text('Enviar Código'),
-                ),
-
-              // Código y Nueva Contraseña (Segundo Paso)
-              if (codeSent) ...[
-                TextField(
-                  controller: codeController,
-                  decoration: InputDecoration(
-                    hintText: 'Código de 6 dígitos',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    border: OutlineInputBorder(),
-                  ),
-                  style: TextStyle(color: Colors.white),
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  controller: newPasswordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: 'Nueva Contraseña',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    border: OutlineInputBorder(),
-                  ),
-                  style: TextStyle(color: Colors.white),
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  controller: repeatPasswordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: 'Repetir Nueva Contraseña',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    border: OutlineInputBorder(),
-                  ),
-                  style: TextStyle(color: Colors.white),
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: resetPassword,
-                  child: Text('Resetear Contraseña'),
-                ),
-              ],
             ],
           ),
         ),

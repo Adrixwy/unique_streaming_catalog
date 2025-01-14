@@ -36,7 +36,7 @@ class _SerieScreenState extends State<SerieScreen> {
           {'season': 2, 'chapter': 2,'title': 'Capítulo 2', 'duration': 50, 'link': 'https://netflix.com/s2ep2'},
         ],
       },
-     },
+    },
     'The Boys': {
       1: {
         'image': 'assets/imagenes/The Boys temporada-1.avif',
@@ -48,8 +48,8 @@ class _SerieScreenState extends State<SerieScreen> {
       2: {
         'image': 'assets/imagenes/The Boys temporada-2.avif',
         'episodes': [
-         {'season': 2, 'chapter': 1,'title': 'Capítulo 1', 'duration': 48, 'link': 'https://netflix.com/s2ep1'},
-         {'season': 2, 'chapter': 2,'title': 'Capítulo 2', 'duration': 48, 'link': 'https://netflix.com/s2ep2'},
+          {'season': 2, 'chapter': 1,'title': 'Capítulo 1', 'duration': 48, 'link': 'https://netflix.com/s2ep1'},
+          {'season': 2, 'chapter': 2,'title': 'Capítulo 2', 'duration': 48, 'link': 'https://netflix.com/s2ep2'},
         ],
       },
     },
@@ -295,7 +295,7 @@ class _SerieScreenState extends State<SerieScreen> {
                           style: TextStyle(color: Colors.white),
                         ),
                       );
-                  }).toList(),
+                    }).toList(),
                   ),
               ],
             ),

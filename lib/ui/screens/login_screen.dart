@@ -20,13 +20,27 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController repeatPasswordController = TextEditingController();
 
   /// Registro
-  void handleRegister() {
+  void handleRegister() async  {
     String username = usernameController.text.trim();
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
     String repeatPassword = repeatPasswordController.text.trim();
 
-    String result = AuthService.register(username, email, password, repeatPassword);
+    if (username.isEmpty || email.isEmpty || password.isEmpty || repeatPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor, completa todos los campos')),
+      );
+      return;
+    }
+
+    if (password != repeatPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Las contraseñas no coinciden')),
+      );
+      return;
+    }
+
+    String result = await AuthService.register(username, email, password);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(result)),
@@ -40,11 +54,14 @@ class _LoginScreenState extends State<LoginScreen> {
         emailController.clear();
         repeatPasswordController.clear();
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result)),
+      );
     }
   }
 
   /// Inicio de Sesion
-  void handleLogin() {
+  void handleLogin() async  {
     String username = usernameController.text.trim();
     String password = passwordController.text.trim();
 
@@ -55,17 +72,23 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    if (AuthService.login(username, password)) {
+    // Esperar la respuesta del login
+    String result = await AuthService.login(username, password);
+
+    if (result == 'Inicio de sesión exitoso') {
+      // Si el login es exitoso, navegar a la pantalla de inicio
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } else {
+      // Si hay un error, mostrar el mensaje de error
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Usuario o contraseña incorrectos')),
+        SnackBar(content: Text(result)),
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
